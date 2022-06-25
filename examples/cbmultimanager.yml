@@ -12,7 +12,7 @@
       package:
         name: firewalld
         state: present
-      when: cbmultimanager_configure_firewalld | default(false) == true
+      when: cbmultimanager_configure_firewalld | default(false)
       tags:
         - cbmultimanager_firewalld
   roles:
@@ -24,7 +24,7 @@
       service:
         name: firewalld
         state: started
-      when: cbmultimanager_configure_firewalld | default(false) == true
+      when: cbmultimanager_configure_firewalld | default(false)
       tags:
         - cbmultimanager_firewalld
     - name: Add port {{ cbmultimanager_bind_port }} (cbmultimanager)
@@ -32,13 +32,13 @@
         port: "{{ cbmultimanager_bind_port }}/tcp"
         permanent: true
         state: enabled
-      when: cbmultimanager_configure_firewalld | default(false) == true
+      when: cbmultimanager_configure_firewalld | default(false)
       tags:
         - cbmultimanager_firewalld
     - name: Make sure firewalld is restarted
       service:
         name: firewalld
         state: restarted
-      when: cbmultimanager_configure_firewalld | default(false) == true
+      when: cbmultimanager_configure_firewalld | default(false)
       tags:
         - cbmultimanager_firewalld
