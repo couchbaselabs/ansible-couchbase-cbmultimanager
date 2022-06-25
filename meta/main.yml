@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  author: Aaron Benton
+  description: Couchbase cbmultimanager
+  company: Couchbase
+  license: Apache
+  role_name: couchbaselabs.cbmultimanager
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Amazon
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - bionic
+        - xenial
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+    - name: Fedora
+      versions:
+        - "30"
+        - "31"
+  galaxy_tags:
+    - couchbase
+    - exporter
+    - prometheus
+    - metrics
+    - cmos
+    - monitor
+    - cluster-monitor

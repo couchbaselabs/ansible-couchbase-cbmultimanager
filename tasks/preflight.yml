@@ -1,0 +1,103 @@
+---
+
+- name: Fail when variables are not defined
+  ansible.builtin.fail:
+    msg: "The {{ item }} property must be set"
+  when: ( item is not defined )
+  with_items:
+    - couchbase_host
+    - couchbase_username
+    - couchbase_password
+    - cbmultimanager_bind_address
+    - cbmultimanager_bind_port
+    - cbmultimanager_fake_collections
+
+- name: Fail when variables do not have a length
+  ansible.builtin.fail:
+    msg: "The {{ item }} property must be valued"
+  when: ( item | string | length == 0 )
+  with_items:
+    - couchbase_host
+    - couchbase_username
+    - couchbase_password
+    - cbmultimanager_bind_address
+    - cbmultimanager_bind_port
+
+- name: Fail when cbmultimanager_bind_port is not a number
+  ansible.builtin.fail:
+    msg: "The cbmultimanager_bind_port property must be an integer"
+  when: ( cbmultimanager_bind_port is defined and cbmultimanager_fake_collections is not number )
+
+- name: Fail when the log level contains an invalid value
+  ansible.builtin.fail:
+    msg: "The cbmultimanager_log_level can only be: debug, info, warn, error"
+  when: ( cbmultimanager_log_level not in ['debug','info','warn','error'] )
+
+- name: Assert usage of systemd as an init system
+  ansible.builtin.assert:
+    that: ansible_service_mgr == 'systemd'
+    msg: "This role only works with systemd"
+
+- name: Get systemd version
+  ansible.builtin.command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+  tags:
+    - skip_ansible_lint
+
+- name: Set systemd version fact
+  ansible.builtin.set_fact:
+    cbmultimanager_systemd_version: "{{ __systemd_version.stdout_lines[0] | regex_replace('^systemd\\s(\\d+).*$', '\\1') }}"
+
+- name: Check if cbmultimanager is installed
+  ansible.builtin.stat:
+    path: "{{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }}"
+  register: __cbmultimanager_is_installed
+  check_mode: false
+
+- name: Install Checks
+  block:
+    - name: Gather currently installed cbmultimanager version
+      ansible.builtin.command:
+        cmd: |
+          {{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }} --version
+      changed_when: false
+      register: __cbmultimanager_current_version_output
+      check_mode: false
+
+    - name: Set cbmultimanager Installed Version
+      ansible.builtin.set_fact:
+        cbmultimanager_installed_version: "{{ __cbmultimanager_current_version_output.stdout.split(' ')[5] }}"
+
+    - name: cbmultimanager Installed Version
+      ansible.builtin.debug:
+        var: cbmultimanager_installed_version
+  tags:
+    - cbmultimanager_install
+  when: __cbmultimanager_is_installed.stat.exists
+
+- name: cbmultimanager Version
+  ansible.builtin.debug:
+    var: cbmultimanager_version
+  tags:
+    - cbmultimanager_install
+
+- name: cbmultimanager Exporter Download URL
+  ansible.builtin.debug:
+    msg: "{{ _cbmultimanager_download_url }}"
+  tags:
+    - cbmultimanager_install
+
+- name: Set whether or not to do the install
+  ansible.builtin.set_fact:
+    __cbmultimanager_do_install: "{{  not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<') }}"
+  tags:
+    - cbmultimanager_install
+    - cbmultimanager_configure
+
+- name: Do Install
+  ansible.builtin.debug:
+    var: __cbmultimanager_do_install
+  tags:
+    - cbmultimanager_install

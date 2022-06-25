@@ -1,0 +1,69 @@
+---
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: "{{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }}"
+    dest: "/usr/bin/{{ cbmultimanager_binary }}"
+    owner: root
+    group: root
+    state: link
+
+- name: Create cbmultimanager Service
+  ansible.builtin.template:
+    src: cbmultimanager.service.j2
+    dest: "{{ _cbmultimanager_systemd_path }}/{{ _cbmultimanager_systemd_unit }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Ensure cbmultimanager is stopped
+  become: true
+  ansible.builtin.systemd:
+    name: cbmultimanager
+    state: stopped
+
+- name: Create cbmultimanager Environment File
+  ansible.builtin.template:
+    src: EnvironmentFile.j2
+    dest: "{{ cbmultimanager_conf_dir }}/{{ cbmultimanager_env_file }}"
+    owner: root
+    group: "{{ cbmultimanager_user_group }}"
+    mode: 0640
+
+- name: Ensure cbmultimanager is started and enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: cbmultimanager
+    enabled: true
+    state: started
+
+- name: Wait for cbmultimanager to come up
+  uri:
+    url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/self"
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 60
+  delay: 1
+
+- name: Add the clusters
+  uri:
+    url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/clusters"
+    user: "{{ cbmultimanager_admin_user }}"
+    password: "{{ cbmultimanager_admin_password }}"
+    method: POST
+    body_format: json
+    headers:
+      Content-Type: application/json
+    status_code:
+      - 200
+    body: |
+      {
+        "host":"{{ item }}",
+        "user":"{{ hostvars[item].couchbase_security.admin_user }}",
+        "alias":"",
+        "password":"{{ hostvars[item].couchbase_security.admin_password }}"
+      }
+  with_items:
+    - "{{ groups.couchbase6_cluster1 | first }}"
+    - "{{ groups.couchbase7_cluster2 | first }}"

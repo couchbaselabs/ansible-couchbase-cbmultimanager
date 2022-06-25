@@ -1,0 +1,3 @@
+---
+- src: https://github.com/couchbaselabs/ansible-couchbase-cbmultimanager.git
+  name: couchbaselabs.cbmultimanager

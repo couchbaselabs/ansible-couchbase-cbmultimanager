@@ -1,0 +1,70 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=cbmultimanager
+Documentation=N/A
+Requires=network.target
+After=network.target
+
+[Service]
+Type=simple
+
+User={{ cbmultimanager_user | default('cbmultimanager') }}
+Group={{ cbmultimanager_user_group | default('cbmultimanager') }}
+WorkingDirectory={{ cbmultimanager_conf_dir }}
+EnvironmentFile=-{{ cbmultimanager_conf_dir }}/{{ cbmultimanager_env_file}}
+
+ExecStart={{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }} \
+    --sqlite-key "$CB_MULTI_SQLITE_PASSWORD" \
+    --sqlite-db "$CB_MULTI_SQLITE_PATH" \
+    {% if cbmultimanager_cert_path | default("") | length > 0 %}
+      --cert-path "$CB_MULTI_CERT_PATH" \
+    {% else %}
+      # --cert-path "$CB_MULTI_CERT_PATH" \
+    {% endif %}
+    {% if cbmultimanager_key_path | default("")  | length > 0 %}
+      --key-path "$CB_MULTI_KEY_PATH" \
+    {% else %}
+      # --key-path "$CB_MULTI_KEY_PATH" \
+    {% endif %}
+    --log-level $CB_MULTI_LOG_LEVEL \
+    --http-port $CB_MULTI_HTTP_PORT \
+    --https-port $CB_MULTI_HTTPS_PORT \
+    --log-dir "$CB_MULTI_LOG_DIR" \
+    --admin-user "$CB_MULTI_ADMIN_USER" \
+    --admin-password "$CB_MULTI_ADMIN_PASSWORD" \
+    --log-check-lifetime "$CB_MULTI_LOG_CHECK_LIFETIME" \
+    --enable-admin-api "$CB_MULTI_ENABLE_ADMIN_API" \
+    --enable-cluster-management-api "$CB_MULTI_ENABLE_CLUSTER_API" \
+    --enable-extended-api "$CB_MULTI_ENABLE_EXTENDED_API" \
+    {% if cbmultimanager_prometheus_url | length > 0 %}
+      # --prometheus-url "$CB_MULTI_PROMETHEUS_URL" \
+      # --prometheus-label-selector "$CB_MULTI_PROMETHEUS_LABEL_SELECTOR" \
+    {% endif %}
+    --alertmanager-urls "$CB_MULTI_ALERTMANAGER_URLS" \
+    --alertmanager-resend-delay "$CB_MULTI_ALERTMANAGER_RESEND_DELAY" \
+    --alertmanager-base-labels "$CB_MULTI_ALERTMANAGER_BASE_LABELS" \
+    --couchbase-user "$CB_MULTI_COUCHBASE_USER" \
+    --couchbase-password "$CB_MULTI_COUCHBASE_PASSWORD"
+
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectHome=true
+
+SyslogIdentifier=cbmultimanager
+Restart=always
+RestartSec=1
+StartLimitInterval=0
+
+{% if cbmultimanager_systemd_version | int >= 232 %}
+ProtectSystem=strict
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% else %}
+ProtectSystem=full
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

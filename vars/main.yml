@@ -1,0 +1,6 @@
+---
+_cbmultimanager_package_name: cbmultimanager-linux-amd64-dp2
+_cbmultimanager_download_url: https://packages.couchbase.com.s3.amazonaws.com/couchbase-observability-stack/dp2/cbmultimanager-linux-amd64-dp2
+
+_cbmultimanager_systemd_path: /etc/systemd/system
+_cbmultimanager_systemd_unit: cbmultimanager.service

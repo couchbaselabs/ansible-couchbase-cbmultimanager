@@ -1,0 +1,79 @@
+---
+- name: Add user group "{{ cbmultimanager_user_group }}"
+  ansible.builtin.group:
+    name: "{{ cbmultimanager_user }}"
+    system: true
+    state: present
+
+- name: Add user "{{ cbmultimanager_user }}"
+  ansible.builtin.user:
+    name: "{{ cbmultimanager_user }}"
+    comment: "cbmultimanager Account"
+    groups:
+      - "{{ cbmultimanager_user_group }}"
+    system: true
+    shell: "/usr/sbin/nologin"
+    createhome: false
+
+- name: Install Directory
+  block:
+    - name: Create cbmultimanager Install Directory
+      ansible.builtin.file:
+        path: "{{ cbmultimanager_install_dir }}"
+        state: directory
+        owner: root
+        group: "{{ cbmultimanager_user_group }}"
+        mode: 0770
+
+    - name: Create cbmultimanager Data Directory
+      ansible.builtin.file:
+        path: "{{ cbmultimanager_data_dir }}"
+        state: directory
+        owner: root
+        group: "{{ cbmultimanager_user_group }}"
+        mode: 0770
+
+    - name: Create cbmultimanager Conf Directory
+      ansible.builtin.file:
+        path: "{{ cbmultimanager_conf_dir }}"
+        state: directory
+        owner: root
+        group: "{{ cbmultimanager_user_group }}"
+        mode: 0755
+
+    - name: Create cbmultimanager Log Directory
+      ansible.builtin.file:
+        path: "{{ cbmultimanager_log_dir }}"
+        state: directory
+        owner: "{{ cbmultimanager_user }}"
+        group: "{{ cbmultimanager_user_group }}"
+        mode: 0755
+
+- name: Create cbmultimanager temp Directory
+  become: false
+  ansible.builtin.file:
+    path: "{{ cbmultimanager_local_tmp_dir }}"
+    state: directory
+  delegate_to: localhost
+  check_mode: false
+
+- name: Download cbmultimanager binary to local folder
+  become: false
+  ansible.builtin.get_url:
+    url: "{{ _cbmultimanager_download_url }}"
+    dest: "{{ cbmultimanager_local_tmp_dir }}/{{ cbmultimanager_binary }}"
+    validate_certs: false
+  register: _download_binary
+  until: _download_binary is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+
+- name: Propagate cbmultimanager binary
+  ansible.builtin.copy:
+    src: "{{ cbmultimanager_local_tmp_dir }}/{{ cbmultimanager_binary }}"
+    dest: "{{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }}"
+    mode: 0755
+    owner: root
+    group: "{{ cbmultimanager_user_group }}"

@@ -1,0 +1,46 @@
+---
+# service variables
+cbmultimanager_version: 0.3.0
+cbmultimanager_user: cbmultimanager
+cbmultimanager_user_group: cbmultimanager
+cbmultimanager_install_dir: /opt/cbmultimanager/bin
+cbmultimanager_binary: cbmultimanager
+cbmultimanager_conf_dir: /etc/cbmultimanager
+cbmultimanager_env_file: service.env
+cbmultimanager_local_tmp_dir: /tmp/cbmultimanager
+
+# logging
+cbmultimanager_log_level: debug
+cbmultimanager_log_dir: /var/log/cbmultimanager/
+
+# configuration variables
+cbmultimanager_data_dir: /var/lib/cbmultimanager/    # The path to the SQLite file to use. If the file does not exist it will create it
+cbmultimanager_sqlite_dbname: data.sqlite    # The name of the SQLite file
+cbmultimanager_sqlite_password: password    # The password for the SQLiteStore [$CB_MULTI_SQLITE_PASSWORD]
+cbmultimanager_cert_path: ""    # Path to a PEM-encoded X.509 certificate to use to serve the API/UI over TLS. If the certificate is signed by a CA, this must also contain the full chain to the CA root certificate, including any intermediates. Can be omitted, in which case TLS serving will be disabled. [$CB_MULTI_CERT_PATH]
+cbmultimanager_key_path: ""
+cbmultimanager_admin_user: admin
+cbmultimanager_admin_password: admin
+cbmultimanager_log_check_lifetime: 1h
+
+# apis
+cbmultimanager_enable_admin_api: true
+cbmultimanager_enable_cluster_mgmt_api: true
+cbmultimanager_enable_extended_api: true
+
+# prometheus
+cbmultimanager_prometheus_url: ""
+cbmultimanager_prometheus_label_selector: job=couchbase
+
+# alertmanager
+cbmultimanager_alertmanager_urls: http://localhost:9093
+cbmultimanager_alertmanager_resend_delay: 30m
+cbmultimanager_alert_manager_base_labels:
+
+# couchbase connection variables
+couchbase_username: Administrator
+couchbase_password: password
+
+# ports
+cbmultimanager_http_port: 7196
+cbmultimanager_https_port: 7197

@@ -1,0 +1,35 @@
+# Certificates and persistent stores if need to be relocated
+CB_MULTI_SQLITE_PATH={{ cbmultimanager_data_dir }}/{{ cbmultimanager_sqlite_dbname }}
+CB_MULTI_SQLITE_PASSWORD="{{ cbmultimanager_sqlite_password }}"
+
+CB_MULTI_CERT_PATH={{ cbmultimanager_cert_path }}
+CB_MULTI_KEY_PATH={{ cbmultimanager_key_path }}
+
+CB_MULTI_HTTP_PORT={{ cbmultimanager_http_port }}
+CB_MULTI_HTTPS_PORT={{ cbmultimanager_https_port }}
+
+CB_MULTI_LOG_LEVEL={{ cbmultimanager_log_level }}
+CB_MULTI_LOG_DIR={{ cbmultimanager_log_dir }}
+
+CB_MULTI_ADMIN_USER="{{ cbmultimanager_admin_user }}"
+CB_MULTI_ADMIN_PASSWORD="{{ cbmultimanager_admin_password }}"
+
+CB_MULTI_LOG_CHECK_LIFETIME={{ cbmultimanager_log_check_lifetime }}
+
+# These turn on/off the various APIs available
+CB_MULTI_ENABLE_ADMIN_API={{ cbmultimanager_enable_admin_api | string | lower }}
+CB_MULTI_ENABLE_CLUSTER_API={{ cbmultimanager_enable_cluster_mgmt_api | string | lower }}
+CB_MULTI_ENABLE_EXTENDED_API={{ cbmultimanager_enable_extended_api | string | lower }}
+
+# These are only necessary if you're using Prometheus discovery
+# CB_MULTI_PROMETHEUS_URL={{ cbmultimanager_prometheus_url }}
+# CB_MULTI_PROMETHEUS_LABEL_SELECTOR="{{ cbmultimanager_prometheus_label_selector }}"
+
+# couchbase user
+CB_MULTI_COUCHBASE_USER="{{ couchbase_username }}"
+CB_MULTI_COUCHBASE_PASSWORD="{{ couchbase_password }}"
+
+# These are only necessary if using Alertmanager
+CB_MULTI_ALERTMANAGER_URLS="{{ cbmultimanager_alertmanager_urls }}"
+CB_MULTI_ALERTMANAGER_RESEND_DELAY={{ cbmultimanager_alertmanager_resend_delay }}
+CB_MULTI_ALERTMANAGER_BASE_LABELS={{ cbmultimanager_alert_manager_base_labels }}
