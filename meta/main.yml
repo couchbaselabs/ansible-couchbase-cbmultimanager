@@ -33,4 +33,5 @@ galaxy_info:
     - metrics
     - cmos
     - monitor
-    - cluster-monitor
+    - cluster
+    - monitor
