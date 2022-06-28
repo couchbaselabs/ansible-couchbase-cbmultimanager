@@ -3,6 +3,8 @@
 cbmultimanager_version: 0.3.0
 cbmultimanager_user: cbmultimanager
 cbmultimanager_user_group: cbmultimanager
+cbmultimanager_user_shell: /usr/sbin/nologin
+cbmultimanager_user_createhome: false
 cbmultimanager_install_dir: /opt/cbmultimanager/bin
 cbmultimanager_binary: cbmultimanager
 cbmultimanager_conf_dir: /etc/cbmultimanager
@@ -10,7 +12,7 @@ cbmultimanager_env_file: service.env
 cbmultimanager_local_tmp_dir: /tmp/cbmultimanager
 
 # logging
-cbmultimanager_log_level: debug
+cbmultimanager_log_level: info
 cbmultimanager_log_dir: /var/log/cbmultimanager/
 
 # configuration variables
