@@ -99,7 +99,7 @@ You can install this role with the `ansible-galaxy` command, and can run it
 directly from the git repository.
 
 ```
-ansible-galaxy install git+https://github.com/couchbaselabs/ansible-couchbase-cbmultimanager.git couchbaselabs.cbmultimanager
+ansible-galaxy role install git+https://github.com/couchbaselabs/ansible-couchbase-cbmultimanager.git,,couchbaselabs.cbmultimanager
 ```
 
 It can also be added to a `requirements.yml` file
