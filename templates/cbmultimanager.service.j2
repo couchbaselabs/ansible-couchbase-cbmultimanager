@@ -2,15 +2,17 @@
 
 [Unit]
 Description=cbmultimanager
-Documentation=N/A
+Documentation=https://docs.couchbase.com/cmos/current/index.html
 Requires=network.target
 After=network.target
 
 [Service]
 Type=simple
 
-User={{ cbmultimanager_user | default('cbmultimanager') }}
-Group={{ cbmultimanager_user_group | default('cbmultimanager') }}
+{% if cbmultimanager_user != 'root' %}
+User={{ cbmultimanager_user }}
+Group={{ cbmultimanager_user_group }}
+{% endif %}
 WorkingDirectory={{ cbmultimanager_conf_dir }}
 EnvironmentFile=-{{ cbmultimanager_conf_dir }}/{{ cbmultimanager_env_file}}
 

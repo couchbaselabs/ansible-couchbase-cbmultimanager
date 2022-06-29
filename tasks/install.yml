@@ -1,7 +1,7 @@
 ---
 - name: Add user group "{{ cbmultimanager_user_group }}"
   ansible.builtin.group:
-    name: "{{ cbmultimanager_user }}"
+    name: "{{ cbmultimanager_user_group }}"
     system: true
     state: present
 
@@ -14,6 +14,7 @@
     system: true
     shell: "{{ cbmultimanager_user_shell }}"
     createhome: "{{ cbmultimanager_user_createhome }}"
+  when: cbmultimanager_user != 'root'
 
 - name: Install Directory
   block:
