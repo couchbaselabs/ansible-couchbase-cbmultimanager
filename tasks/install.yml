@@ -5,16 +5,34 @@
     system: true
     state: present
 
-- name: Add user "{{ cbmultimanager_user }}"
-  ansible.builtin.user:
-    name: "{{ cbmultimanager_user }}"
-    comment: "cbmultimanager Account"
-    groups:
-      - "{{ cbmultimanager_user_group }}"
-    system: true
-    shell: "{{ cbmultimanager_user_shell }}"
-    createhome: "{{ cbmultimanager_user_createhome }}"
-  when: cbmultimanager_user != 'root'
+- name: cbmultimanager User Creation
+  block:
+    - name: Check if the "{{ cbmultimanager_user }}" user exists
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ cbmultimanager_user }}"
+        fail_key: false
+
+    - name: Set whether not the user exists
+      ansible.builtin.set_fact:
+        __cbmultimanager_user_exists: "{{ ansible_facts.getent_passwd[cbmultimanager_user] is not none }}"
+
+    - name: Add user "{{ cbmultimanager_user }}"
+      ansible.builtin.user:
+        name: "{{ cbmultimanager_user }}"
+        comment: "cbmultimanager Account"
+        groups:
+          - "{{ cbmultimanager_user_group }}"
+          - "{{ cbmultimanager_couchbase_user_group }}"
+        system: true
+        shell: "{{ cbmultimanager_user_shell }}"
+        createhome: "{{ cbmultimanager_user_createhome }}"
+      when: not __cbmultimanager_user_exists and cbmultimanager_user != 'root'
+
+    - name: cbmultimanager User Exists"
+      ansible.builtin.debug:
+        msg: "The user \"{{ cbmultimanager_user }}\" already exists and will not be modified, if modifying permissions please perform a separate task"
+      when: __cbmultimanager_user_exists
 
 - name: Install Directory
   block:
@@ -22,25 +40,25 @@
       ansible.builtin.file:
         path: "{{ cbmultimanager_install_dir }}"
         state: directory
-        owner: root
+        owner: "{{ cbmultimanager_user }}"
         group: "{{ cbmultimanager_user_group }}"
-        mode: 0770
+        mode: 0664
 
     - name: Create cbmultimanager Data Directory
       ansible.builtin.file:
         path: "{{ cbmultimanager_data_dir }}"
         state: directory
-        owner: root
+        owner: "{{ cbmultimanager_user }}"
         group: "{{ cbmultimanager_user_group }}"
-        mode: 0770
+        mode: 0664
 
     - name: Create cbmultimanager Conf Directory
       ansible.builtin.file:
         path: "{{ cbmultimanager_conf_dir }}"
         state: directory
-        owner: root
+        owner: "{{ cbmultimanager_user }}"
         group: "{{ cbmultimanager_user_group }}"
-        mode: 0755
+        mode: 0664
 
     - name: Create cbmultimanager Log Directory
       ansible.builtin.file:
@@ -48,13 +66,14 @@
         state: directory
         owner: "{{ cbmultimanager_user }}"
         group: "{{ cbmultimanager_user_group }}"
-        mode: 0755
+        mode: 0664
 
 - name: Create cbmultimanager temp Directory
   become: false
   ansible.builtin.file:
     path: "{{ cbmultimanager_local_tmp_dir }}"
     state: directory
+    mode: 0664
   delegate_to: localhost
   check_mode: false
 
@@ -64,6 +83,7 @@
     url: "{{ _cbmultimanager_download_url }}"
     dest: "{{ cbmultimanager_local_tmp_dir }}/{{ cbmultimanager_binary }}"
     validate_certs: false
+    mode: 0664
   register: _download_binary
   until: _download_binary is succeeded
   retries: 5
@@ -75,6 +95,6 @@
   ansible.builtin.copy:
     src: "{{ cbmultimanager_local_tmp_dir }}/{{ cbmultimanager_binary }}"
     dest: "{{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }}"
-    mode: 0755
-    owner: root
+    mode: 0775
+    owner: "{{ cbmultimanager_user }}"
     group: "{{ cbmultimanager_user_group }}"

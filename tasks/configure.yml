@@ -16,7 +16,6 @@
     mode: 0775
 
 - name: Ensure cbmultimanager is stopped
-  become: true
   ansible.builtin.systemd:
     name: cbmultimanager
     state: stopped
@@ -25,7 +24,7 @@
   ansible.builtin.template:
     src: EnvironmentFile.j2
     dest: "{{ cbmultimanager_conf_dir }}/{{ cbmultimanager_env_file }}"
-    owner: root
+    owner: "{{ cbmultimanager_user }}"
     group: "{{ cbmultimanager_user_group }}"
     mode: 0664
 
@@ -38,7 +37,7 @@
     state: started
 
 - name: Wait for cbmultimanager to come up
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/self"
     method: GET
   register: _result
@@ -47,7 +46,8 @@
   delay: 1
 
 - name: Get Existing Clusters
-  uri:
+  no_log: true
+  ansible.builtin.uri:
     url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/clusters"
     method: GET
     user: "{{ cbmultimanager_admin_user }}"
@@ -60,7 +60,8 @@
   retries: 15
   delay: 5
 
-- debug:
+- name: Clusters
+  ansible.builtin.debug:
     var: _cbmultimanager_clusters
 
 - name: Add the clusters

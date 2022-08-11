@@ -141,7 +141,8 @@
 
 - name: Set whether or not to do the install
   ansible.builtin.set_fact:
-    __cbmultimanager_do_install: "{{  not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<') }}"
+    __cbmultimanager_do_install: >
+      {{  not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<') }}
 
 - name: Do Install
   ansible.builtin.debug:
