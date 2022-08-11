@@ -87,6 +87,7 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `cbmultimanager_alertmanager_urls` | `http://localhost:9093` | URLs of Alertmanager instances to send alerts to. This must contain the entire base URL, including http or https |
 | `cbmultimanager_alertmanager_resend_delay` | `30m` | Interval between re-sending alerts to Alertmanager. |
 | `cbmultimanager_alert_manager_base_labels` | `""` | Base labels to be applied to alerts for Alertmanager. Syntax: label1=value label2=value |
+| `cbmultimanager_cluster_urls` | `[]` | One node from each cluster to automatically provision |
 | `couchbase_username` | `Administrator` | Couchbase user name (only needed when using Prometheus discovery) |
 | `couchbase_password` | `password` |  Couchbase password (only needed when using Prometheus discovery) |
 | `cbmultimanager_http_port` | `7196` | The port to serve HTTP REST API |

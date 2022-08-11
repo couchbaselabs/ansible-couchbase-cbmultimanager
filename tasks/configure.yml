@@ -13,7 +13,7 @@
     dest: "{{ _cbmultimanager_systemd_path }}/{{ _cbmultimanager_systemd_unit }}"
     owner: root
     group: root
-    mode: 0755
+    mode: 0775
 
 - name: Ensure cbmultimanager is stopped
   become: true
@@ -27,7 +27,7 @@
     dest: "{{ cbmultimanager_conf_dir }}/{{ cbmultimanager_env_file }}"
     owner: root
     group: "{{ cbmultimanager_user_group }}"
-    mode: 0640
+    mode: 0664
 
 - name: Ensure cbmultimanager is started and enabled on boot
   become: true
@@ -46,8 +46,26 @@
   retries: 60
   delay: 1
 
-- name: Add the clusters
+- name: Get Existing Clusters
   uri:
+    url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/clusters"
+    method: GET
+    user: "{{ cbmultimanager_admin_user }}"
+    password: "{{ cbmultimanager_admin_password }}"
+    timeout: 5
+    status_code:
+      - 200
+  register: _cbmultimanager_clusters
+  until: _cbmultimanager_clusters.status == 200
+  retries: 15
+  delay: 5
+
+- debug:
+    var: _cbmultimanager_clusters
+
+- name: Add the clusters
+  no_log: true
+  ansible.builtin.uri:
     url: "http://localhost:{{ cbmultimanager_http_port }}/api/v1/clusters"
     user: "{{ cbmultimanager_admin_user }}"
     password: "{{ cbmultimanager_admin_password }}"
@@ -60,10 +78,8 @@
     body: |
       {
         "host":"{{ item }}",
-        "user":"{{ hostvars[item].couchbase_security.admin_user }}",
+        "user":"{{ couchbase_username }}",
         "alias":"",
-        "password":"{{ hostvars[item].couchbase_security.admin_password }}"
+        "password":"{{ couchbase_password }}"
       }
-  with_items:
-    - "{{ groups.couchbase6_cluster1 | first }}"
-    - "{{ groups.couchbase7_cluster2 | first }}"
+  with_items: "{{ cbmultimanager_cluster_urls }}"

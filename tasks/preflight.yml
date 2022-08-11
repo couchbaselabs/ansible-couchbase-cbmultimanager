@@ -3,30 +3,86 @@
 - name: Fail when variables are not defined
   ansible.builtin.fail:
     msg: "The {{ item }} property must be set"
-  when: ( item is not defined )
+  when: ( vars[item] is not defined )
   with_items:
-    - couchbase_host
+    - cbmultimanager_version
+    - cbmultimanager_user
+    - cbmultimanager_user_group
+    - cbmultimanager_user_shell
+    - cbmultimanager_user_createhome
+    - cbmultimanager_install_dir
+    - cbmultimanager_binary
+    - cbmultimanager_conf_dir
+    - cbmultimanager_env_file
+    - cbmultimanager_local_tmp_dir
+    - cbmultimanager_log_level
+    - cbmultimanager_log_dir
+    - cbmultimanager_data_dir
+    - cbmultimanager_sqlite_dbname
+    - cbmultimanager_sqlite_password
+    - cbmultimanager_cert_path
+    - cbmultimanager_key_path
+    - cbmultimanager_admin_user
+    - cbmultimanager_admin_password
+    - cbmultimanager_log_check_lifetime
+    - cbmultimanager_enable_admin_api
+    - cbmultimanager_enable_cluster_mgmt_api
+    - cbmultimanager_enable_extended_api
+    - cbmultimanager_prometheus_url
+    - cbmultimanager_prometheus_label_selector
+    - cbmultimanager_alertmanager_urls
+    - cbmultimanager_alertmanager_resend_delay
+    - cbmultimanager_alert_manager_base_labels
     - couchbase_username
     - couchbase_password
-    - cbmultimanager_bind_address
-    - cbmultimanager_bind_port
-    - cbmultimanager_fake_collections
+    - cbmultimanager_http_port
+    - cbmultimanager_https_port
 
 - name: Fail when variables do not have a length
   ansible.builtin.fail:
     msg: "The {{ item }} property must be valued"
-  when: ( item | string | length == 0 )
+  when: ( vars[item] | string | length == 0 )
   with_items:
-    - couchbase_host
+    - cbmultimanager_version
+    - cbmultimanager_user
+    - cbmultimanager_user_group
+    - cbmultimanager_user_shell
+    - cbmultimanager_install_dir
+    - cbmultimanager_binary
+    - cbmultimanager_conf_dir
+    - cbmultimanager_env_file
+    - cbmultimanager_local_tmp_dir
+    - cbmultimanager_log_level
+    - cbmultimanager_log_dir
+    - cbmultimanager_data_dir
+    - cbmultimanager_sqlite_dbname
+    - cbmultimanager_sqlite_password
+    - cbmultimanager_admin_user
+    - cbmultimanager_admin_password
+    - cbmultimanager_log_check_lifetime
+    - cbmultimanager_alertmanager_urls
+    - cbmultimanager_alertmanager_resend_delay
+    - cbmultimanager_alert_manager_base_labels
     - couchbase_username
     - couchbase_password
-    - cbmultimanager_bind_address
-    - cbmultimanager_bind_port
 
-- name: Fail when cbmultimanager_bind_port is not a number
+- name: Fail when cbmultimanager ports are not a number
   ansible.builtin.fail:
-    msg: "The cbmultimanager_bind_port property must be an integer"
-  when: ( cbmultimanager_bind_port is defined and cbmultimanager_fake_collections is not number )
+    msg: "The {{ item }} property must be an integer"
+  when: ( vars[item] is not number )
+  with_items:
+    - cbmultimanager_http_port
+    - cbmultimanager_https_port
+
+- name: Fail when out enable flags are not a boolean
+  ansible.builtin.fail:
+    msg: "The {{ item }} property must be a boolean true or false "
+  when: ( vars[item] | bool | string | lower ) not in ['true', 'false']
+  with_items:
+    - cbmultimanager_enable_admin_api
+    - cbmultimanager_enable_cluster_mgmt_api
+    - cbmultimanager_enable_extended_api
+    - cbmultimanager_user_createhome
 
 - name: Fail when the log level contains an invalid value
   ansible.builtin.fail:
@@ -73,31 +129,20 @@
     - name: cbmultimanager Installed Version
       ansible.builtin.debug:
         var: cbmultimanager_installed_version
-  tags:
-    - cbmultimanager_install
   when: __cbmultimanager_is_installed.stat.exists
 
 - name: cbmultimanager Version
   ansible.builtin.debug:
     var: cbmultimanager_version
-  tags:
-    - cbmultimanager_install
 
 - name: cbmultimanager Exporter Download URL
   ansible.builtin.debug:
     msg: "{{ _cbmultimanager_download_url }}"
-  tags:
-    - cbmultimanager_install
 
 - name: Set whether or not to do the install
   ansible.builtin.set_fact:
     __cbmultimanager_do_install: "{{  not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<') }}"
-  tags:
-    - cbmultimanager_install
-    - cbmultimanager_configure
 
 - name: Do Install
   ansible.builtin.debug:
     var: __cbmultimanager_do_install
-  tags:
-    - cbmultimanager_install

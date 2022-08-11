@@ -39,6 +39,8 @@ cbmultimanager_alertmanager_urls: http://localhost:9093
 cbmultimanager_alertmanager_resend_delay: 30m
 cbmultimanager_alert_manager_base_labels:
 
+cbmultimanager_cluster_urls: []
+
 # couchbase connection variables
 couchbase_username: Administrator
 couchbase_password: password
