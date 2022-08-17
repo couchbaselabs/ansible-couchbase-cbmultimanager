@@ -56,8 +56,6 @@ ProtectHome=true
 
 SyslogIdentifier=cbmultimanager
 Restart=always
-RestartSec=1
-StartLimitInterval=0
 
 {% if cbmultimanager_systemd_version | int >= 232 %}
 ProtectSystem=strict
