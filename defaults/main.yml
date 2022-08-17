@@ -9,7 +9,11 @@ cbmultimanager_install_dir: /opt/cbmultimanager/bin
 cbmultimanager_binary: cbmultimanager
 cbmultimanager_conf_dir: /etc/cbmultimanager
 cbmultimanager_env_file: service.env
-cbmultimanager_local_tmp_dir: /tmp/cbmultimanager
+cbmultimanager_local_tmp_dir: /tmp/cbmultimanager    # path to where the binary will be downloaded to on the controller
+# full path to the local binary if already downloaded on the controller
+# this should only be set, if ansible is not downloading the binary and you have
+# manually downloaded the binary
+cbmultimanager_local_binary_path: ""
 
 # logging
 cbmultimanager_log_level: info

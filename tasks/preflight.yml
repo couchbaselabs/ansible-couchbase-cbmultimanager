@@ -89,6 +89,22 @@
     msg: "The cbmultimanager_log_level can only be: debug, info, warn, error"
   when: ( cbmultimanager_log_level not in ['debug','info','warn','error'] )
 
+- name: Fail when cbmultimanager_local_binary_path is defined but the file doesn't exist
+  block:
+    - name: Check if cbmultimanager_local_binary_path exists
+      ansible.builtin.stat:
+        path: "{{ cbmultimanager_install_dir }}/{{ cbmultimanager_binary }}"
+      register: __cbmultimanager_local_binary_check
+      become: false
+      delegate_to: localhost
+      check_mode: false
+
+    - name: Fail when the cbmultimanager_local_binary_path does not exist
+      ansible.builtin.fail:
+        msg: "The cbmultimanager_local_binary_path ({{ cbmultimanager_local_binary_path }}) was specified but does not exist"
+      when: not __cbmultimanager_local_binary_check.stat.exists
+  when: cbmultimanager_local_binary_path is defined and cbmultimanager_local_binary_path | length > 0
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_service_mgr == 'systemd'
@@ -141,8 +157,7 @@
 
 - name: Set whether or not to do the install
   ansible.builtin.set_fact:
-    __cbmultimanager_do_install: >
-      {{  not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<') }}
+    __cbmultimanager_do_install: "{{ (not __cbmultimanager_is_installed.stat.exists or cbmultimanager_installed_version is version_compare(cbmultimanager_version, '<')) | bool }}"
 
 - name: Do Install
   ansible.builtin.debug:

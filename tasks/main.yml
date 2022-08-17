@@ -14,7 +14,7 @@
       become: true
       tags:
         - cbmultimanager_install
-  when: __cbmultimanager_do_install
+  when: __cbmultimanager_do_install | bool
 
 - include_tasks:
     file: configure.yml

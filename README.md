@@ -69,7 +69,8 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `cbmultimanager_conf_dir` | `/etc/cbmultimanager` | The configuration directory, contains an environment file |
 | `cbmultimanager_env_file` | `service.env` | The name of the environment file |
 | `cbmultimanager_local_tmp_dir` | `/tmp/cbmultimanager` | The temporary directory on the ansible controller to download the binary to |
-| `cbmultimanager_log_level` | `debug` |  Set the log level, options are [error, warn, info, debug] |
+| `cbmultimanager_local_binary_path` | `""` | Full path to the local binary if already downloaded on the controller.  This should only be set, if ansible is not downloading the binary and you have |
+| `cbmultimanager_log_level` | `info` |  Set the log level, options are [error, warn, info, debug] |
 | `cbmultimanager_log_dir` | `/var/log/cbmultimanager/` | The location to log too. If it does not exist it will try to create it. |
 | `cbmultimanager_data_dir` | `/var/lib/cbmultimanager/` | The path to the data directory |
 | `cbmultimanager_sqlite_dbname` | `data.sqlite` | The name of the sqlite database file |
