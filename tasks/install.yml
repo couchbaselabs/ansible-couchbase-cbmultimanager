@@ -43,7 +43,6 @@
         comment: "cbmultimanager Account"
         groups:
           - "{{ cbmultimanager_user_group }}"
-          - "{{ cbmultimanager_couchbase_user_group }}"
         system: true
         shell: "{{ cbmultimanager_user_shell }}"
         createhome: "{{ cbmultimanager_user_createhome }}"

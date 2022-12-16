@@ -62,7 +62,6 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `cbmultimanager_version` | `0.3.0` | The version of cbmultimanager to install |
 | `cbmultimanager_user` | `cbmultimanager` | The local OS user to run cbmultimanager as |
 | `cbmultimanager_user_group` | `cbmultimanager` | The local OS user group |
-| `cbmultimanager_couchbase_user_group` | `couchbase` | The local OS group Couchbase is using |
 | `cbmultimanager_user_shell` | `/usr/sbin/nologin` | By default `/usr/sbin/nologin` is used to prevent the user from logging in, if you're using an existing user account this should be `/bin/bash` |
 `cbmultimanager_user_createhome` | `false` | Whether or not to create the home directory for the user |
 | `cbmultimanager_install_dir` | `/opt/cbmultimanager/bin` | The path to the install directory |
