@@ -3,6 +3,7 @@
 cbmultimanager_version: 0.3.0
 cbmultimanager_user: cbmultimanager
 cbmultimanager_user_group: cbmultimanager
+cbmultimanager_couchbase_user_group: couchbase
 cbmultimanager_user_shell: /usr/sbin/nologin
 cbmultimanager_user_createhome: false
 cbmultimanager_install_dir: /opt/cbmultimanager/bin
